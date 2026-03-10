@@ -1,18 +1,20 @@
 # Quiz Deck
 
-A simple flashcard web application for creating and studying cards. The project is built with plain HTML, CSS, and JavaScript, and uses browser localStorage for persistence.
+## Project Description
+Quiz Deck is a web application with a digital flashcard system for studying. It helps students organize their study material and test their knowledge on different topics.
 
-## Features
+## Planned Features
+1. Create flashcards (question + answer)
+2. Flip flashcards to reveal answers
+3. Navigate through cards
+4. Delete cards
+5. Save flashcards using localStorage
+(With other additonal features later in development)
 
-- Create flashcards (question + answer)
-- Flip cards to reveal answers
-- Navigate through cards
-- Delete cards
-- Save cards using local storage
-
-## Setup
-
-```bash
-# open the project in your browser or
-# serve it using a simple HTTP server
-```
+## Tech Stack
+HTML
+CSS
+JavaScript
+LocalStorage
+GitHub
+Vercel (deployment)
