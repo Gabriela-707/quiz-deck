@@ -4,14 +4,10 @@
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    signInWithPopup,
-    GoogleAuthProvider,
     signOut,
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
 import { auth } from "./firebase.js";
-
-const googleProvider = new GoogleAuthProvider();
 
 // ── Panel toggle ──────────────────────────────────────────────────────────────
 
@@ -98,25 +94,6 @@ document.getElementById("btn-register").addEventListener("click", async () => {
         showError("register-error", friendlyError(err.code));
     }
 });
-
-// ── Google sign-in (used on both panels) ─────────────────────────────────────
-
-async function loginWithGoogle() {
-    clearErrors();
-    try {
-        await signInWithPopup(auth, googleProvider);
-        // onAuthStateChanged in app.js handles routing on success
-    } catch (err) {
-        // Show error on whichever panel is visible
-        const errorId = panelRegister.classList.contains("hidden")
-            ? "auth-error"
-            : "register-error";
-        showError(errorId, friendlyError(err.code));
-    }
-}
-
-document.getElementById("btn-google-login").addEventListener("click", loginWithGoogle);
-document.getElementById("btn-google-register").addEventListener("click", loginWithGoogle);
 
 // ── Logout ────────────────────────────────────────────────────────────────────
 
