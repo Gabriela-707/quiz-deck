@@ -1,0 +1,49 @@
+Phase 1 — Authentication (~3 hours)
+Build login/register forms in #view-auth with an error message element
+Implement loginWithEmail, registerWithEmail, loginWithGoogle, logout, and onAuthChange in auth.js
+In app.js, listen to onAuthStateChanged — if logged in, show deck view; if not, show auth view. This is the entire routing system.
+Add a persistent header with the user's name and a logout button
+Checkpoint: Register, log in, stay logged in on refresh, log out.
+
+Phase 2 — Deck Management (~3 hours)
+Implement createDeck, getDecks, updateDeck, deleteDeck in firestore.js
+Note: deleteDeck must manually delete all cards in the subcollection first (Firestore doesn't cascade-delete)
+Build deck list view: fetch decks, render each with Open / Edit / Delete buttons
+Reuse #modal-overlay for create and edit forms (same modal, different content)
+Checkpoint: Full deck CRUD works.
+
+Phase 3 — Card Creation, Viewing, and Flip (~4 hours)
+Implement createCard, getCards, updateCard, deleteCard in firestore.js
+Opening a deck loads its cards into appState.cards, sets currentCardIndex = 0, switches to #view-cards
+Prev/Next buttons update currentCardIndex and call renderCard()
+Flip animation is pure CSS — a .card-inner with transform-style: preserve-3d, and a .is-flipped class that applies rotateY(180deg). JS just toggles the class on click. Always remove .is-flipped when navigating to a new card.
+Add/edit/delete cards via the shared modal
+Checkpoint: Full card CRUD, flip animation, and navigation all work.
+
+Phase 4 — Quiz Mode (~3 hours)
+On quiz start, create a shuffled copy of appState.cards (never mutate the originals) using the Fisher-Yates shuffle
+Show one card at a time with flip behavior. "Correct" / "Incorrect" buttons only appear after the card is flipped
+Track score in quizState: { correct, incorrect }
+When all cards are done, show a results screen with score, percentage, and options to: retry missed cards only, restart, or go back to the deck
+Checkpoint: Full quiz flow with scoring and results screen.
+
+Phase 5 — Security & Polish (~2 hours)
+Firestore security rules: Lock down so users can only read/write their own data:
+
+match /users/{userId}/{document=**} {
+    allow read, write: if request.auth.uid == userId;
+}
+Add a spinner/loading state for all async operations (prevent double-submits)
+Add a toast notification system for success/error feedback
+Handle empty states (deck with no cards → show a prompt to add the first card)
+Add responsive CSS for mobile (the flip card layout needs special attention on small screens)
+Key Architectural Notes
+Decision	Rationale
+One modal, many uses	Configure it dynamically with a ui.openModal({ title, fields, onSubmit }) helper
+Optimistic UI updates	After create/edit/delete, update appState locally and re-render — don't re-fetch from Firestore every time
+All Firestore calls in one file	firestore.js is the only file that imports Firebase DB. Everything else calls functions from it. Easy to swap or test.
+Wrap every async call in try/catch	On error, call ui.toast(error.message, 'error') and hide the spinner
+Recommended Implementation Order Within firestore.js
+getDecks → createDeck → createCard → getCards → updateDeck → updateCard → deleteDeck → deleteCard
+Start with reads (safest to test), then writes, then deletes.
+

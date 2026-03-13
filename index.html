@@ -10,10 +10,216 @@
 </head>
 
 <body>
-    <main class="container">
-        <h1>Quiz Deck</h1>
-        <p class="description">Create, study, and master flashcards with ease. Your personal deck of knowledge.</p>
-    </main>
+
+    <!-- ── Persistent App Header (visible when logged in) ─────────────── -->
+    <header id="app-header" class="hidden">
+        <div class="header-left">
+            <span class="app-logo">Quiz Deck</span>
+        </div>
+        <div class="header-right">
+            <div id="header-avatar" role="button" tabindex="0" title="My Profile">
+                <svg class="header-avatar-default" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                </svg>
+            </div>
+            <span id="user-display-name"></span>
+        </div>
+    </header>
+
+    <!-- ── View: Auth (Login / Register) ──────────────────────────────── -->
+    <div id="view-auth" class="view active-view">
+        <div class="auth-card">
+            <h1 class="auth-title">Quiz Deck</h1>
+            <p class="auth-subtitle">Create, study, and master flashcards with ease.</p>
+
+            <!-- Login Panel -->
+            <div id="panel-login" class="auth-panel">
+                <h2>Sign In</h2>
+                <p id="auth-error" class="auth-error hidden"></p>
+                <input type="email" id="login-email" class="input" placeholder="Email" />
+                <input type="password" id="login-password" class="input" placeholder="Password" />
+                <button id="btn-login" class="btn btn-primary">Sign In</button>
+                <button id="btn-google-login" class="btn btn-google">Sign in with Google</button>
+                <p class="auth-toggle">
+                    Don't have an account?
+                    <a href="#" id="link-to-register">Register</a>
+                </p>
+            </div>
+
+            <!-- Register Panel -->
+            <div id="panel-register" class="auth-panel hidden">
+                <h2>Create Account</h2>
+                <p id="register-error" class="auth-error hidden"></p>
+                <input type="email" id="register-email" class="input" placeholder="Email" />
+                <input type="password" id="register-password" class="input" placeholder="Password (min 6 characters)" />
+                <button id="btn-register" class="btn btn-primary">Create Account</button>
+                <button id="btn-google-register" class="btn btn-google">Sign up with Google</button>
+                <p class="auth-toggle">
+                    Already have an account?
+                    <a href="#" id="link-to-login">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── View: Deck List ─────────────────────────────────────────────── -->
+    <div id="view-decks" class="view">
+        <div class="view-header">
+            <h2>My Decks</h2>
+            <button id="btn-new-deck" class="btn btn-primary">+ New Deck</button>
+        </div>
+        <input type="text" id="deck-search" class="input" placeholder="Search decks..." />
+        <div id="deck-list" class="deck-list">
+            <!-- Deck cards rendered here by deck.js -->
+        </div>
+        <div id="deck-empty" class="empty-state hidden">
+            <p>No decks yet. Create your first deck to get started!</p>
+        </div>
+    </div>
+
+    <!-- ── View: Card Viewer ───────────────────────────────────────────── -->
+    <div id="view-cards" class="view">
+        <div class="view-header">
+            <button id="btn-back-to-decks" class="btn btn-ghost">← Back</button>
+            <h2 id="deck-title-display"></h2>
+            <button id="btn-start-quiz" class="btn btn-primary">Quiz Mode</button>
+        </div>
+
+        <!-- Flip Card -->
+        <div class="card-scene">
+            <div class="card-inner" id="flashcard">
+                <div class="card-face card-front">
+                    <p id="card-question"></p>
+                    <span class="card-hint">Click to reveal answer</span>
+                </div>
+                <div class="card-face card-back">
+                    <p id="card-answer"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="card-nav">
+            <button id="btn-prev" class="btn btn-ghost">← Prev</button>
+            <span id="card-counter">0 / 0</span>
+            <button id="btn-next" class="btn btn-ghost">Next →</button>
+        </div>
+
+        <!-- Card Actions -->
+        <div class="card-actions">
+            <button id="btn-add-card" class="btn btn-primary">+ Add Card</button>
+            <button id="btn-edit-card" class="btn btn-secondary">Edit</button>
+            <button id="btn-delete-card" class="btn btn-danger">Delete</button>
+        </div>
+
+        <div id="cards-empty" class="empty-state hidden">
+            <p>No cards yet. Add your first card!</p>
+        </div>
+    </div>
+
+    <!-- ── View: Quiz Mode ─────────────────────────────────────────────── -->
+    <div id="view-quiz" class="view">
+        <div class="view-header">
+            <button id="btn-exit-quiz" class="btn btn-ghost">← Exit Quiz</button>
+            <h2 id="quiz-deck-title"></h2>
+        </div>
+
+        <!-- Quiz progress -->
+        <div class="quiz-progress">
+            <span id="quiz-counter"></span>
+            <span id="quiz-score"></span>
+        </div>
+
+        <!-- Quiz Card (reuses same flip structure) -->
+        <div class="card-scene">
+            <div class="card-inner" id="quiz-flashcard">
+                <div class="card-face card-front">
+                    <p id="quiz-question"></p>
+                    <span class="card-hint">Click to reveal answer</span>
+                </div>
+                <div class="card-face card-back">
+                    <p id="quiz-answer"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Answer buttons (shown only after flip) -->
+        <div id="quiz-answer-btns" class="quiz-answer-btns hidden">
+            <button id="btn-incorrect" class="btn btn-danger">✗ Missed It</button>
+            <button id="btn-correct" class="btn btn-success">✓ Got It</button>
+        </div>
+
+        <!-- Results Screen (hidden until quiz ends) -->
+        <div id="quiz-results" class="quiz-results hidden">
+            <h2>Quiz Complete!</h2>
+            <p id="results-summary"></p>
+            <div class="results-actions">
+                <button id="btn-retry-missed" class="btn btn-secondary">Retry Missed Cards</button>
+                <button id="btn-restart-quiz" class="btn btn-primary">Restart</button>
+                <button id="btn-back-from-quiz" class="btn btn-ghost">Back to Deck</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Shared Modal Overlay ────────────────────────────────────────── -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title"></h3>
+                <button id="modal-close" class="btn btn-ghost">✕</button>
+            </div>
+            <form id="modal-form">
+                <!-- Fields injected dynamically by ui.js -->
+            </form>
+            <div class="modal-footer">
+                <button type="button" id="modal-cancel" class="btn btn-ghost">Cancel</button>
+                <button type="submit" form="modal-form" id="modal-submit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── View: Profile ─────────────────────────────────────────────── -->
+    <div id="view-profile" class="view">
+        <div class="view-header profile-view-header">
+            <button id="btn-back-from-profile" class="btn btn-ghost">← Back</button>
+            <h2>My Profile</h2>
+            <span class="header-spacer"></span>
+        </div>
+
+        <div class="profile-card">
+            <div id="profile-avatar-preview" class="profile-avatar-container">
+                <!-- Avatar image or initials rendered by profile.js -->
+            </div>
+
+            <div class="profile-form">
+                <label for="profile-display-name">Display Name</label>
+                <input type="text" id="profile-display-name" class="input" placeholder="Your display name" />
+
+                <label>Avatar</label>
+                <input type="file" id="profile-avatar-file" accept="image/*" class="hidden" />
+                <button type="button" id="btn-upload-avatar" class="btn btn-secondary btn-upload-avatar">Choose Image</button>
+
+                <button id="btn-save-profile" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Save Changes</button>
+                <button id="btn-logout" class="btn btn-danger" style="width:100%; margin-top:0.5rem;">Logout</button>
+            </div>
+        </div>
+
+        <label class="theme-toggle-label">
+            Dark Mode
+            <input type="checkbox" id="toggle-dark-mode" class="theme-toggle-input" />
+            <span class="theme-toggle-slider"></span>
+        </label>
+    </div>
+
+    <!-- ── Loading Spinner ─────────────────────────────────────────────── -->
+    <div id="spinner-overlay" class="spinner-overlay hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- ── Toast Notification ──────────────────────────────────────────── -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script type="module" src="js/app.js"></script>
 </body>
 
 </html>
