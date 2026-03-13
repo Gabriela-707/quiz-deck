@@ -398,6 +398,78 @@ h1 {
     background: #c9302c !important;
 }
 
+/* Edit Screen Styles */
+.edit-deck-info {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.edit-deck-info h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.deck-actions {
+    margin: 1rem 0;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.card-management {
+    margin-top: 2rem;
+}
+
+.card-management h3 {
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+.edit-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.edit-card-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.edit-card-content {
+    flex: 1;
+    margin-right: 1rem;
+}
+
+.edit-card-question {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.edit-card-answer {
+    color: #666;
+    font-style: italic;
+}
+
+.edit-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.btn-small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
 .quiz-input input {
     flex: 1;
     padding: 0.4rem;

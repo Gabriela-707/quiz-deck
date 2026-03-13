@@ -13,6 +13,7 @@
     <nav class="nav-bar">
         <button id="nav-home" class="nav-btn active">Home</button>
         <button id="nav-create" class="nav-btn">Create Deck</button>
+        <button id="nav-edit" class="nav-btn">Edit Decks</button>
         <button id="nav-quiz" class="nav-btn">Quiz</button>
     </nav>
 
@@ -37,6 +38,29 @@
                 </div>
                 <button type="submit" class="btn-primary">Create Deck</button>
             </form>
+        </section>
+
+        <!-- Edit Deck Screen -->
+        <section id="edit-screen" class="screen hidden">
+            <h1>Edit Decks</h1>
+            <div class="deck-controls">
+                <label for="edit-deck-select">Select Deck to Edit:</label>
+                <select id="edit-deck-select"></select>
+            </div>
+            <div id="edit-deck-info" class="edit-deck-info" hidden>
+                <h2 id="edit-deck-title">Deck Name</h2>
+                <div class="deck-stats">Cards: <span id="edit-deck-card-count">0</span></div>
+                <div class="deck-actions">
+                    <button id="rename-deck-btn" class="btn-secondary">Rename Deck</button>
+                    <button id="delete-deck-btn" class="btn-danger">Delete Deck</button>
+                </div>
+                <div class="card-management">
+                    <h3>Manage Cards</h3>
+                    <div id="edit-card-list" class="edit-card-list">
+                        <!-- Cards will be listed here -->
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Quiz Screen -->
