@@ -75,6 +75,7 @@ function getDeckTags() {
 }
 
 function renderEditDeckSelector() {
+    console.log('Rendering edit deck selector');
     editDeckSelect.innerHTML = '';
 
     if (decks.length === 0) {
@@ -259,6 +260,7 @@ function renderDeckList() {
         editBtn.textContent = 'Edit';
         editBtn.className = 'btn-secondary';
         editBtn.addEventListener('click', () => {
+            console.log('Edit button clicked for deck:', deck.id);
             setActiveDeck(deck.id);
             switchScreen('edit');
         });
@@ -306,6 +308,7 @@ function renderCurrentCard() {
 }
 
 function switchScreen(screen) {
+    console.log('Switching to screen:', screen);
     currentScreen = screen;
 
     // Update nav buttons
