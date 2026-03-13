@@ -144,6 +144,9 @@ function renderDeckList() {
         const deckItem = document.createElement('div');
         deckItem.className = 'deck-item';
 
+        const deckInfo = document.createElement('div');
+        deckInfo.className = 'deck-info';
+
         const deckTitle = document.createElement('h3');
         deckTitle.textContent = deck.name;
 
@@ -151,16 +154,33 @@ function renderDeckList() {
         deckStats.className = 'deck-stats';
         deckStats.textContent = `${deck.cards.length} cards`;
 
-        const selectBtn = document.createElement('button');
-        selectBtn.textContent = 'Select';
-        selectBtn.addEventListener('click', () => {
+        const deckButtons = document.createElement('div');
+        deckButtons.className = 'deck-buttons';
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.className = 'btn-secondary';
+        editBtn.addEventListener('click', () => {
             setActiveDeck(deck.id);
             switchScreen('quiz');
         });
 
-        deckItem.appendChild(deckTitle);
-        deckItem.appendChild(deckStats);
-        deckItem.appendChild(selectBtn);
+        const quizBtn = document.createElement('button');
+        quizBtn.textContent = 'Quiz';
+        quizBtn.className = 'btn-primary';
+        quizBtn.addEventListener('click', () => {
+            setActiveDeck(deck.id);
+            switchScreen('quiz');
+        });
+
+        deckInfo.appendChild(deckTitle);
+        deckInfo.appendChild(deckStats);
+
+        deckButtons.appendChild(editBtn);
+        deckButtons.appendChild(quizBtn);
+
+        deckItem.appendChild(deckInfo);
+        deckItem.appendChild(deckButtons);
 
         deckList.appendChild(deckItem);
     });
