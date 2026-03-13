@@ -5,28 +5,36 @@ let decks = [];
 let activeDeckId = null;
 let currentIndex = 0;
 let activeTagFilter = '';
-let quizMode = false;
+let currentScreen = 'home';
 
 // DOM elements
-const form = document.getElementById('new-card-form');
-const questionInput = document.getElementById('question');
-const answerInput = document.getElementById('answer');
-const tagsInput = document.getElementById('tags');
-const deckSelect = document.getElementById('deck-select');
-const newDeckBtn = document.getElementById('new-deck-btn');
-const tagFilterSelect = document.getElementById('tag-filter');
-const quizModeBtn = document.getElementById('quiz-mode-btn');
+const navHome = document.getElementById('nav-home');
+const navCreate = document.getElementById('nav-create');
+const navQuiz = document.getElementById('nav-quiz');
+const homeScreen = document.getElementById('home-screen');
+const createScreen = document.getElementById('create-screen');
+const quizScreen = document.getElementById('quiz-screen');
+const deckList = document.getElementById('deck-list');
+const createDeckFromHomeBtn = document.getElementById('create-deck-from-home');
+const createDeckForm = document.getElementById('create-deck-form');
+const deckNameInput = document.getElementById('deck-name');
+const quizDeckSelect = document.getElementById('quiz-deck-select');
+const quizTagFilterSelect = document.getElementById('quiz-tag-filter');
+const quizFlashcardEl = document.getElementById('quiz-flashcard');
+const quizFlashcardFrontText = document.getElementById('quiz-flashcard-front-text');
+const quizFlashcardBackText = document.getElementById('quiz-flashcard-back-text');
+const quizFlashcardTags = document.getElementById('quiz-flashcard-tags');
+const quizPrevBtn = document.getElementById('quiz-prev-btn');
+const quizNextBtn = document.getElementById('quiz-next-btn');
 const quizPanel = document.getElementById('quiz-panel');
 const quizAnswerInput = document.getElementById('quiz-answer');
 const quizCheckBtn = document.getElementById('quiz-check');
 const quizFeedback = document.getElementById('quiz-feedback');
 const quizProgress = document.getElementById('quiz-progress');
-const flashcardEl = document.getElementById('flashcard');
-const flashcardFront = document.getElementById('flashcard-front');
-const flashcardBack = document.getElementById('flashcard-back');
-const flashcardFrontText = document.getElementById('flashcard-front-text');
-const flashcardBackText = document.getElementById('flashcard-back-text');
-const flashcardTags = document.getElementById('flashcard-tags');
+const newCardForm = document.getElementById('new-card-form');
+const questionInput = document.getElementById('question');
+const answerInput = document.getElementById('answer');
+const tagsInput = document.getElementById('tags');
 const deleteBtn = document.getElementById('delete-btn');
 
 function getActiveDeck() {
@@ -57,40 +65,16 @@ function getDeckTags() {
     return Array.from(tagSet).sort();
 }
 
-function renderTagFilterOptions() {
-    tagFilterSelect.innerHTML = '';
-    const allOption = document.createElement('option');
-    allOption.value = '';
-    allOption.textContent = 'All';
-    tagFilterSelect.appendChild(allOption);
-
-    getDeckTags().forEach((tag) => {
-        const option = document.createElement('option');
-        option.value = tag;
-        option.textContent = tag;
-        tagFilterSelect.appendChild(option);
-    });
-
-    tagFilterSelect.value = activeTagFilter;
-}
-
-function setActiveTagFilter(tag) {
-    activeTagFilter = tag;
-    currentIndex = 0;
-    renderCurrentCard();
-    saveState();
-}
-
 function renderDeckSelector() {
-    deckSelect.innerHTML = '';
+    quizDeckSelect.innerHTML = '';
 
     if (decks.length === 0) {
         const placeholder = document.createElement('option');
         placeholder.textContent = 'No decks';
         placeholder.disabled = true;
         placeholder.selected = true;
-        deckSelect.appendChild(placeholder);
-        deckSelect.disabled = true;
+        quizDeckSelect.appendChild(placeholder);
+        quizDeckSelect.disabled = true;
         renderTagFilterOptions();
         return;
     }
@@ -100,11 +84,28 @@ function renderDeckSelector() {
         option.value = deck.id;
         option.textContent = deck.name;
         if (deck.id === activeDeckId) option.selected = true;
-        deckSelect.appendChild(option);
+        quizDeckSelect.appendChild(option);
     });
-    deckSelect.disabled = false;
+    quizDeckSelect.disabled = false;
 
     renderTagFilterOptions();
+}
+
+function renderTagFilterOptions() {
+    quizTagFilterSelect.innerHTML = '';
+    const allOption = document.createElement('option');
+    allOption.value = '';
+    allOption.textContent = 'All';
+    quizTagFilterSelect.appendChild(allOption);
+
+    getDeckTags().forEach((tag) => {
+        const option = document.createElement('option');
+        option.value = tag;
+        option.textContent = tag;
+        quizTagFilterSelect.appendChild(option);
+    });
+
+    quizTagFilterSelect.value = activeTagFilter;
 }
 
 function setActiveDeck(deckId) {
@@ -116,16 +117,11 @@ function setActiveDeck(deckId) {
     saveState();
 }
 
-function setQuizMode(on) {
-    quizMode = Boolean(on);
-    quizModeBtn.textContent = quizMode ? 'Exit Quiz' : 'Start Quiz';
-
-    if (quizMode) {
-        currentIndex = 0;
-        activeTagFilter = '';
-    }
-
+function setActiveTagFilter(tag) {
+    activeTagFilter = tag;
+    currentIndex = 0;
     renderCurrentCard();
+    saveState();
 }
 
 function createDeck(name) {
@@ -134,7 +130,84 @@ function createDeck(name) {
     setActiveDeck(id);
 }
 
-// load any saved cards and index on startup
+function renderDeckList() {
+    deckList.innerHTML = '';
+
+    if (decks.length === 0) {
+        const emptyMsg = document.createElement('p');
+        emptyMsg.textContent = 'No decks yet. Create your first deck!';
+        deckList.appendChild(emptyMsg);
+        return;
+    }
+
+    decks.forEach((deck) => {
+        const deckItem = document.createElement('div');
+        deckItem.className = 'deck-item';
+
+        const deckTitle = document.createElement('h3');
+        deckTitle.textContent = deck.name;
+
+        const deckStats = document.createElement('div');
+        deckStats.className = 'deck-stats';
+        deckStats.textContent = `${deck.cards.length} cards`;
+
+        const selectBtn = document.createElement('button');
+        selectBtn.textContent = 'Select';
+        selectBtn.addEventListener('click', () => {
+            setActiveDeck(deck.id);
+            switchScreen('quiz');
+        });
+
+        deckItem.appendChild(deckTitle);
+        deckItem.appendChild(deckStats);
+        deckItem.appendChild(selectBtn);
+
+        deckList.appendChild(deckItem);
+    });
+}
+
+function renderCurrentCard() {
+    // reset flip state
+    quizFlashcardEl.classList.remove('flipped');
+
+    const cards = getVisibleCards();
+
+    if (cards.length === 0) {
+        quizFlashcardFrontText.textContent = 'No cards yet';
+        quizFlashcardBackText.textContent = '';
+        quizFlashcardTags.textContent = '';
+    } else {
+        const card = cards[currentIndex];
+        quizFlashcardFrontText.textContent = card.question;
+        quizFlashcardBackText.textContent = card.answer;
+        const tags = Array.isArray(card.tags) ? card.tags : [];
+        quizFlashcardTags.textContent = tags.length ? `Tags: ${tags.join(', ')}` : '';
+    }
+
+    quizProgress.textContent = `${cards.length ? currentIndex + 1 : 0} / ${cards.length}`;
+}
+
+function switchScreen(screen) {
+    currentScreen = screen;
+
+    // Update nav buttons
+    navHome.classList.toggle('active', screen === 'home');
+    navCreate.classList.toggle('active', screen === 'create');
+    navQuiz.classList.toggle('active', screen === 'quiz');
+
+    // Show/hide screens
+    homeScreen.classList.toggle('hidden', screen !== 'home');
+    createScreen.classList.toggle('hidden', screen !== 'create');
+    quizScreen.classList.toggle('hidden', screen !== 'quiz');
+
+    if (screen === 'home') {
+        renderDeckList();
+    } else if (screen === 'quiz') {
+        renderDeckSelector();
+        renderCurrentCard();
+    }
+}
+
 function loadState() {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) {
@@ -187,38 +260,79 @@ function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-// render the card at currentIndex (or placeholder if none)
-function renderCurrentCard() {
-    // reset flip state
-    flashcardEl.classList.remove('flipped');
+// Event listeners
+navHome.addEventListener('click', () => switchScreen('home'));
+navCreate.addEventListener('click', () => switchScreen('create'));
+navQuiz.addEventListener('click', () => switchScreen('quiz'));
 
-    renderTagFilterOptions();
+createDeckFromHomeBtn.addEventListener('click', () => switchScreen('create'));
+
+createDeckForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = deckNameInput.value.trim();
+    if (!name) return;
+    createDeck(name);
+    createDeckForm.reset();
+    switchScreen('home');
+});
+
+quizDeckSelect.addEventListener('change', (e) => {
+    setActiveDeck(e.target.value);
+});
+
+quizTagFilterSelect.addEventListener('change', (e) => {
+    setActiveTagFilter(e.target.value);
+});
+
+quizFlashcardEl.addEventListener('click', () => {
+    quizFlashcardEl.classList.toggle('flipped');
+});
+
+quizPrevBtn.addEventListener('click', () => {
     const cards = getVisibleCards();
-
-    if (quizMode) {
-        quizPanel.hidden = false;
-        quizAnswerInput.value = '';
-        quizFeedback.textContent = '';
-        quizProgress.textContent = `${cards.length ? currentIndex + 1 : 0} / ${cards.length}`;
+    if (cards.length === 0) return;
+    if (currentIndex > 0) {
+        currentIndex--;
     } else {
-        quizPanel.hidden = true;
+        currentIndex = cards.length - 1;
+    }
+    renderCurrentCard();
+    saveState();
+});
+
+quizNextBtn.addEventListener('click', () => {
+    const cards = getVisibleCards();
+    if (cards.length === 0) return;
+    if (currentIndex < cards.length - 1) {
+        currentIndex++;
+    } else {
+        currentIndex = 0;
+    }
+    renderCurrentCard();
+    saveState();
+});
+
+quizCheckBtn.addEventListener('click', () => {
+    const cards = getVisibleCards();
+    if (cards.length === 0) return;
+
+    const card = cards[currentIndex];
+    const userAnswer = quizAnswerInput.value.trim().toLowerCase();
+    const correctAnswer = (card.answer || '').trim().toLowerCase();
+
+    if (!userAnswer) {
+        quizFeedback.textContent = 'Please enter an answer.';
+        return;
     }
 
-    if (cards.length === 0) {
-        flashcardFrontText.textContent = 'No cards yet';
-        flashcardBackText.textContent = '';
-        flashcardTags.textContent = '';
+    if (userAnswer === correctAnswer) {
+        quizFeedback.textContent = 'Correct! ✅';
     } else {
-        const card = cards[currentIndex];
-        flashcardFrontText.textContent = card.question;
-        flashcardBackText.textContent = card.answer;
-        const tags = Array.isArray(card.tags) ? card.tags : [];
-        flashcardTags.textContent = tags.length ? `Tags: ${tags.join(', ')}` : '';
+        quizFeedback.textContent = `Incorrect. Correct answer: ${card.answer}`;
     }
-}
+});
 
-// form submit handling
-form.addEventListener('submit', (e) => {
+newCardForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const question = questionInput.value.trim();
     const answer = answerInput.value.trim();
@@ -244,82 +358,10 @@ form.addEventListener('submit', (e) => {
     currentIndex = deck.cards.length - 1;
     saveState();
     renderCurrentCard();
+    renderDeckList(); // Update deck stats on home screen
 
-    form.reset();
+    newCardForm.reset();
     tagsInput.value = '';
-});
-
-// flip action when clicking the card
-flashcardEl.addEventListener('click', () => {
-    if (quizMode) return;
-    const cards = getActiveCards();
-    if (cards.length === 0) return;
-    flashcardEl.classList.toggle('flipped');
-});
-
-// navigation controls
-const prevBtn = document.getElementById('prev-btn');
-const nextBtn = document.getElementById('next-btn');
-
-function showCardAt(index) {
-    const cards = getActiveCards();
-    if (cards.length === 0) return;
-    // clamp index to valid range
-    if (index < 0) {
-        index = cards.length - 1; // wrap around to end
-    } else if (index >= cards.length) {
-        index = 0; // wrap around to start
-    }
-    currentIndex = index;
-    renderCurrentCard();
-    saveState();
-}
-
-prevBtn.addEventListener('click', () => {
-    showCardAt(currentIndex - 1);
-});
-nextBtn.addEventListener('click', () => {
-    showCardAt(currentIndex + 1);
-});
-
-deckSelect.addEventListener('change', (e) => {
-    setActiveDeck(e.target.value);
-});
-
-tagFilterSelect.addEventListener('change', (e) => {
-    setActiveTagFilter(e.target.value);
-});
-
-newDeckBtn.addEventListener('click', () => {
-    const name = window.prompt('Enter a name for the new deck:', 'New Deck');
-    if (!name) return;
-    createDeck(name.trim() || 'Untitled');
-});
-
-quizModeBtn.addEventListener('click', () => {
-    setQuizMode(!quizMode);
-});
-
-quizCheckBtn.addEventListener('click', () => {
-    if (!quizMode) return;
-
-    const cards = getVisibleCards();
-    if (cards.length === 0) return;
-
-    const card = cards[currentIndex];
-    const userAnswer = quizAnswerInput.value.trim().toLowerCase();
-    const correctAnswer = (card.answer || '').trim().toLowerCase();
-
-    if (!userAnswer) {
-        quizFeedback.textContent = 'Please enter an answer.';
-        return;
-    }
-
-    if (userAnswer === correctAnswer) {
-        quizFeedback.textContent = 'Correct! ✅';
-    } else {
-        quizFeedback.textContent = `Incorrect. Correct answer: ${card.answer}`;
-    }
 });
 
 // delete current card
@@ -337,16 +379,16 @@ deleteBtn.addEventListener('click', () => {
 
     saveState();
     renderCurrentCard();
+    renderDeckList(); // Update deck stats on home screen
 });
 
-// initialize
+// Initialize
 loadState();
 
 if (decks.length === 0) {
     createDeck('Default');
 } else if (!activeDeckId) {
     setActiveDeck(decks[0].id);
-} else {
-    renderDeckSelector();
-    renderCurrentCard();
 }
+
+switchScreen('home');

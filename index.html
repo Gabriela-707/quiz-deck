@@ -10,77 +10,95 @@
 </head>
 
 <body>
+    <nav class="nav-bar">
+        <button id="nav-home" class="nav-btn active">Home</button>
+        <button id="nav-create" class="nav-btn">Create Deck</button>
+        <button id="nav-quiz" class="nav-btn">Quiz</button>
+    </nav>
+
     <main class="container">
-        <h1>Quiz Deck</h1>
-        <p class="description">Create, study, and master flashcards with ease. Your personal deck of knowledge.</p>
-
-        <!-- deck controls -->
-        <section class="deck-controls">
-            <label for="deck-select">Deck:</label>
-            <select id="deck-select"></select>
-            <button id="new-deck-btn" type="button">New Deck</button>
-            <button id="quiz-mode-btn" type="button">Start Quiz</button>
+        <!-- Home Screen -->
+        <section id="home-screen" class="screen">
+            <h1>Quiz Deck</h1>
+            <p class="description">Create, study, and master flashcards with ease. Your personal deck of knowledge.</p>
+            <div id="deck-list" class="deck-list">
+                <!-- Decks will be listed here -->
+            </div>
+            <button id="create-deck-from-home" class="btn-primary">Create New Deck</button>
         </section>
 
-        <!-- tag filtering -->
-        <section class="tag-filter">
-            <label for="tag-filter">Filter by tag:</label>
-            <select id="tag-filter">
-                <option value="">All</option>
-            </select>
-        </section>
-
-        <!-- card creation form -->
-        <section class="card-form">
-            <h2>New Card</h2>
-            <form id="new-card-form">
+        <!-- Create Deck Screen -->
+        <section id="create-screen" class="screen hidden">
+            <h1>Create New Deck</h1>
+            <form id="create-deck-form">
                 <div class="form-group">
-                    <label for="question">Question</label>
-                    <input type="text" id="question" name="question" required>
+                    <label for="deck-name">Deck Name</label>
+                    <input type="text" id="deck-name" name="deck-name" required>
                 </div>
-                <div class="form-group">
-                    <label for="answer">Answer</label>
-                    <input type="text" id="answer" name="answer" required>
-                </div>
-                <div class="form-group">
-                    <label for="tags">Tags (comma-separated)</label>
-                    <input type="text" id="tags" name="tags" placeholder="e.g. vocab, spanish">
-                </div>
-                <button type="submit">Add Card</button>
+                <button type="submit" class="btn-primary">Create Deck</button>
             </form>
         </section>
 
-        <!-- display area for a single flashcard -->
-        <section class="card-display">
-            <div id="flashcard" class="card">
-                <div class="card-inner" id="flashcard-inner">
-                    <div class="card-face card-front" id="flashcard-front">
-                        <div class="card-text" id="flashcard-front-text">No cards yet</div>
-                        <div class="card-tags" id="flashcard-tags"></div>
-                    </div>
-                    <div class="card-face card-back" id="flashcard-back">
-                        <div class="card-text" id="flashcard-back-text"></div>
+        <!-- Quiz Screen -->
+        <section id="quiz-screen" class="screen hidden">
+            <h1>Quiz Mode</h1>
+            <div class="deck-controls">
+                <label for="quiz-deck-select">Select Deck:</label>
+                <select id="quiz-deck-select"></select>
+            </div>
+            <div class="tag-filter">
+                <label for="quiz-tag-filter">Filter by tag:</label>
+                <select id="quiz-tag-filter">
+                    <option value="">All</option>
+                </select>
+            </div>
+            <div class="card-display">
+                <div id="quiz-flashcard" class="card">
+                    <div class="card-inner" id="quiz-flashcard-inner">
+                        <div class="card-face card-front" id="quiz-flashcard-front">
+                            <div class="card-text" id="quiz-flashcard-front-text">Select a deck to start</div>
+                            <div class="card-tags" id="quiz-flashcard-tags"></div>
+                        </div>
+                        <div class="card-face card-back" id="quiz-flashcard-back">
+                            <div class="card-text" id="quiz-flashcard-back-text"></div>
+                        </div>
                     </div>
                 </div>
+                <div class="controls">
+                    <button id="quiz-prev-btn">Previous</button>
+                    <button id="quiz-next-btn">Next</button>
+                    <button id="delete-btn" class="btn-danger">Delete Card</button>
+                </div>
             </div>
-            <div class="controls">
-                <button id="prev-btn">Previous</button>
-                <button id="next-btn">Next</button>
-                <button id="delete-btn" class="danger">Delete</button>
+            <div id="quiz-panel" class="quiz-panel" hidden>
+                <div class="quiz-header">
+                    <span id="quiz-progress">0 / 0</span>
+                </div>
+                <div class="quiz-input">
+                    <label for="quiz-answer">Your answer</label>
+                    <input id="quiz-answer" type="text" autocomplete="off" />
+                    <button id="quiz-check" type="button">Check</button>
+                </div>
+                <div id="quiz-feedback" class="quiz-feedback"></div>
             </div>
-        </section>
-
-        <!-- quiz mode panel -->
-        <section id="quiz-panel" class="quiz-panel" hidden>
-            <div class="quiz-header">
-                <span id="quiz-progress">0 / 0</span>
+            <div class="card-creation">
+                <h2>Add New Card</h2>
+                <form id="new-card-form">
+                    <div class="form-group">
+                        <label for="question">Question</label>
+                        <input type="text" id="question" name="question" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="answer">Answer</label>
+                        <input type="text" id="answer" name="answer" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tags">Tags (comma-separated)</label>
+                        <input type="text" id="tags" name="tags" placeholder="e.g., math, algebra, equations">
+                    </div>
+                    <button type="submit" class="btn-primary">Add Card</button>
+                </form>
             </div>
-            <div class="quiz-input">
-                <label for="quiz-answer">Your answer</label>
-                <input id="quiz-answer" type="text" autocomplete="off" />
-                <button id="quiz-check" type="button">Check</button>
-            </div>
-            <div id="quiz-feedback" class="quiz-feedback"></div>
         </section>
     </main>
     <script src="script.js"></script>
