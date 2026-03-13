@@ -1,6 +1,6 @@
 # Quiz Deck
 
-A web-based flashcard application for creating, organizing, and studying custom card decks — with quiz mode, user profiles, and cloud storage.
+A web-based flashcard application for creating, organizing, and studying custom card decks with quiz mode, user profiles, and cloud storage.
 
 ## Project Description
 
